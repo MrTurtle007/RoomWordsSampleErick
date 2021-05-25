@@ -6,6 +6,11 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+/**
+ * Entidad representada en una clase
+ * Una palabra en una BD
+ */
+
 @Entity(tableName = "word_table")
 public class Word {
 
@@ -19,6 +24,11 @@ public class Word {
     public Word(@NonNull String word) {
         this.mWord = word;
     }
+
+    /*
+     * Este constructor se anota usando @Ignore, porque Room espera sólo
+     * un constructor de forma predeterminada en una clase de entidad.
+     */
 
     @Ignore
     public Word(int id, @NonNull String word) {

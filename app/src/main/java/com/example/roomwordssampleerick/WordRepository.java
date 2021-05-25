@@ -7,6 +7,18 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+/**
+ * Esta clase contiene el código de implementación para los métodos que interactúan con la base de datos.
+ * El uso de un repositorio nos permite agrupar los métodos de implementación,
+ * y permite que el WordViewModel sea una interfaz limpia entre el resto de la aplicación
+ * y la base de datos.
+ * Para insertar, actualizar y eliminar, y consultas de ejecución prolongada,
+ * debe ejecutar los métodos de interacción de la base de datos en segundo plano.
+ *
+ * Normalmente, todo lo que necesita hacer para implementar un método de base de datos
+ * es llamarlo en el objeto de acceso a datos (DAO), en segundo plano si corresponde.
+ */
+
 public class WordRepository {
 
     private WordDao mWordDao;
@@ -34,10 +46,16 @@ public class WordRepository {
         new deleteAllWordsAsyncTask(mWordDao).execute();
     }
 
+    //Debe ejecutarse fuera del hilo principal
     public void deleteWord(Word word) {
         new deleteWordAsyncTask(mWordDao).execute(word);
     }
 
+    //Clases internas estáticas a continuación aquí para ejecutar interacciones de base de datos en segundo plano
+
+    /**
+     * Inserta una palabra en la base de datos.
+     */
     private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
 
         private WordDao mAsyncTaskDao;
@@ -53,6 +71,9 @@ public class WordRepository {
         }
     }
 
+    /**
+     * Elimina todas las palabras de la base de datos (no elimina la tabla).
+     */
     private static class deleteAllWordsAsyncTask extends AsyncTask<Void, Void, Void> {
         private WordDao mAsyncTaskDao;
 
@@ -67,6 +88,9 @@ public class WordRepository {
         }
     }
 
+    /**
+     * Elimina una sola palabra de la base de datos.
+     */
     private static class deleteWordAsyncTask extends AsyncTask<Word, Void, Void> {
         private WordDao mAsyncTaskDao;
 
@@ -81,6 +105,9 @@ public class WordRepository {
         }
     }
 
+    /**
+     * Actualiza una palabra en la base de datos.
+     */
     private static class updateWordAsyncTask extends AsyncTask<Word, Void, Void> {
         private WordDao mAsyncTaskDao;
 

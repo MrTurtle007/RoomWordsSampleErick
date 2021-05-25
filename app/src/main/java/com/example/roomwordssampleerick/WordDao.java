@@ -10,6 +10,12 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Objeto de acceso a datos (DAO) para una palabra.
+ * Cada método realiza una operación de base de datos, como insertar o eliminar una palabra,
+ * ejecutar una consulta de base de datos o eliminar todas las palabras.
+ */
+
 @Dao
 public interface WordDao {
 

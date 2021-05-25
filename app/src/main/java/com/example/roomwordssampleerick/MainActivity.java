@@ -23,6 +23,17 @@ import android.widget.Toast;
 
 import java.util.List;
 
+/**
+ * Esta clase muestra una lista de palabras en un RecyclerView.
+ * Las palabras se guardan en una base de datos de la habitación.
+ * El diseño de esta actividad también muestra una FAB que
+ * permite a los usuarios iniciar NewWordActivity para agregar nuevas palabras.
+ * Los usuarios pueden eliminar una palabra deslizándola o eliminando todas las palabras
+ * a través del menú Opciones.
+ * Cada vez que se agrega, elimina o actualiza una nueva palabra, el RecyclerView
+ * mostrar la lista de palabras se actualiza automáticamente.
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
@@ -41,25 +52,25 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Set up the RecyclerView.
+        //Configuración para el recyclerview
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         final WordListAdapter adapter = new WordListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Set up the WordViewModel.
+        //Configuración para el WordViewModel
         mWordViewModel = ViewModelProviders.of(this).get(WordViewModel.class);
-        // Get all the words from the database
-        // and associate them to the adapter.
+        //Se obtienen todas las words de la BD
+        //y se asocian al adaptador
         mWordViewModel.getAllWords().observe(this, new Observer<List<Word>>() {
             @Override
             public void onChanged(@Nullable final List<Word> words) {
-                // Update the cached copy of the words in the adapter.
+                //Actualiza la copia almacenada en caché de las palabras del adaptador.
                 adapter.setWords(words);
             }
         });
 
-        // Floating action button setup
+        //Configuración del Floating action button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Add the functionality to swipe items in the
-        // RecyclerView to delete the swiped item.
+        //Agregue la funcionalidad para deslizar elementos en el
+        //RecyclerView para eliminar el elemento deslizado
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
-                    // We are not implementing onMove() in this app.
+                    //No se implementa onMove() en esta aplicación.
                     public boolean onMove(RecyclerView recyclerView,
                                           RecyclerView.ViewHolder viewHolder,
                                           RecyclerView.ViewHolder target) {
@@ -83,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    // When the use swipes a word,
-                    // delete that word from the database.
+                    //Cuando se desliza una palabra,
+                    //se elimina esa palabra de la base de datos
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
                         Word myWord = adapter.getWordAtPosition(position);
@@ -92,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
                                 getString(R.string.delete_word_preamble) + " " +
                                         myWord.getWord(), Toast.LENGTH_LONG).show();
 
-                        // Delete the word.
+                        //Borrar la palabra
                         mWordViewModel.deleteWord(myWord);
                     }
                 });
-        // Attach the item touch helper to the recycler view.
+        //Se conecta el elemento táctil auxiliar a la vista de reciclador
         helper.attachToRecyclerView(recyclerView);
 
         adapter.setOnItemClickListener(new WordListAdapter.ClickListener()  {
@@ -111,26 +122,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        //Inflar el menú; esto agrega elementos a la barra de acciones si está presente
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    // The options menu has a single item "Clear all data now"
-    // that deletes all the entries in the database.
+    //El menú de opciones tiene un solo elemento "Clear all data now"
+    //que elimina todas las entradas de la base de datos
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, as long
-        // as you specify a parent activity in AndroidManifest.xml.
+        //Los clics del elemento de la barra de acciones se manejan aquí. La barra de acción
+        //manejar automáticamente los clics en el Home/Up button, siempre y cuando
+        //a medida que especifica una parent activity en AndroidManifest.xml
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.clear_data) {
-            // Add a toast just for confirmation
+            //Toast de confirmación
             Toast.makeText(this, R.string.clear_data_toast_text, Toast.LENGTH_LONG).show();
 
-            // Delete the existing data.
+            //Borrar los datos existentes
             mWordViewModel.deleteAll();
             return true;
         }
@@ -138,21 +149,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * When the user enters a new word in the NewWordActivity,
-     * that activity returns the result to this activity.
-     * If the user entered a new word, save it in the database.
+     * Cuando el usuario escribe una nueva palabra en el NewWordActivity,
+     * esa actividad devuelve el resultado a esta actividad.
+     * Si el usuario ha introducido una nueva palabra, guárdela en la base de datos.
 
-     * @param requestCode ID for the request
-     * @param resultCode indicates success or failure
-     * @param data The Intent sent back from the NewWordActivity,
-     *             which includes the word that the user entered
+     * @param requestCode ID para la solicitud
+     * @param resultCode indica éxito o fracaso
+     * @param data La intención enviada de nuevo desde el NewWordActivity,
+     * que incluye la palabra que el usuario introdujo
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
             Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
-            // Save the data.
+            //Guardar la info
             mWordViewModel.insert(word);
         } else if (requestCode == UPDATE_WORD_ACTIVITY_REQUEST_CODE
                 && resultCode == RESULT_OK) {

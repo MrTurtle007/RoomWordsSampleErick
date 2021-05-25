@@ -7,6 +7,11 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+/**
+ * El WordViewModel proporciona la interfaz entre la interfaz de usuario y la capa de datos de la aplicación,
+ * representado por el Repositorio
+ */
+
 public class WordViewModel extends AndroidViewModel {
 
     private WordRepository mRepository;

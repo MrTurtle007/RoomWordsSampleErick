@@ -10,10 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+
+/**
+ * Adaptador para el RecyclerView que muestra una lista de palabras
+ */
+
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
     private final LayoutInflater mInflater;
-    private List<Word> mWords; // Cached copy of words
+    private List<Word> mWords; //Copia almacenada en caché de palabras
     private static ClickListener clickListener;
 
     WordListAdapter(Context context) {
@@ -32,16 +37,23 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
             Word current = mWords.get(position);
             holder.wordItemView.setText(current.getWord());
         } else {
-            // Covers the case of data not being ready yet.
+            //Cubre el caso de que los datos aún no estén listos
             holder.wordItemView.setText(R.string.no_word);
         }
     }
 
+    /**
+     * Asocia una lista de palabras con este adaptador
+     */
     void setWords(List<Word> words) {
         mWords = words;
         notifyDataSetChanged();
     }
 
+    /**
+     * getItemCount() se llama muchas veces, y cuando se llama por primera vez,
+     * mWords no se ha actualizado (significa inicialmente, es null, y no podemos devolver null).
+     */
     @Override
     public int getItemCount() {
         if (mWords != null)
@@ -49,6 +61,13 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         else return 0;
     }
 
+    /**
+     * Obtiene la palabra en una posición dada.
+     * Este método es útil para identificar qué palabra
+     * se ha clic o deslizado en métodos que controlan los eventos del usuario.
+     * @param position
+     * @return
+     */
     public Word getWordAtPosition(int position) {
         return mWords.get(position);
     }
